@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'models/weather_model.dart';
+import 'services/weather_service.dart' as weather_scv;
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late Future<List<DailyForcast>> futureWeatherForcasts;
   Widget weatherTile (int position) {
     print ("Inside weatherTile and setting up tile for positon ${position}");
     return ListTile(
@@ -36,6 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text("Title Here"),
       subtitle: Text("Subtitle Here"),
     );
+  }
+
+  @override
+  initState() {
+
+    weather_scv.WeatherDataService();
+
   }
 
   @override
