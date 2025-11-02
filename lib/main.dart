@@ -30,9 +30,13 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+Widget weatherImage() {
+  daily.weather[0].main
+}
+
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<DailyForcast>> futureWeatherForcasts;
-  Widget weatherTile (int position) {
+  late Future<List<WeatherData>> futureWeatherForcasts;
+  Widget weatherTile (int position, {required Text title, required subtitle, required Widget leading}) {
     print ("Inside weatherTile and setting up tile for positon ${position}");
     return ListTile(
       leading: Image(image: AssetImage('graphics/sun.png')),
@@ -43,9 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   initState() {
-
     weather_scv.WeatherDataService();
-
   }
 
   @override
@@ -54,13 +56,28 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemCount: 4,
-        itemBuilder: (BuildContext context, int position) {
-          return Card(
-            child: weatherTile(position),
+      body: FutureBuilder(
+        future: futureWeatherForcasts,
+        builder: (context, snapshot) {
+          if (snapshot.data == null ||
+              snapshot.connectionState == ConnectionState.none) {
+            return Container();
+          }
+          return ListView.builder(
+            itemCount: snapshot.data?.length,
+            itemBuilder: (BuildContext context, int position) {
+              WeatherData weather = snapshot.data![position];
+              return Card(
+                child: weatherTile(position,
+                    leading: weatherImage(),
+                    title: Text("The weather today will be ${weather.list.first.main.temp} today"),
+                    subtitle: Text("It will feel like ${weather.list.first.main.feelsLike} degrees today"
+                ),
+                )
+              );
+            },
           );
-        },
+        }
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
